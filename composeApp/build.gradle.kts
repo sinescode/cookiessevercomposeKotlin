@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     id("com.google.gms.google-services") version "4.4.2"
+    id("com.android.kotlin.multiplatform.library") version "<latest_version>"
 }
 
 kotlin {
