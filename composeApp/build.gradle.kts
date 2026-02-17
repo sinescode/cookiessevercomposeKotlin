@@ -45,6 +45,7 @@ kotlin {
 
                 // Firebase (using BOM)
                 implementation(libs.firebase.messaging)
+                implementation(platform(libs.firebase.bom))
 
                 // Coroutines for Android
                 implementation(libs.kotlinx.coroutines.android)
