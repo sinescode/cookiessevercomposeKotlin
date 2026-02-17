@@ -44,7 +44,6 @@ kotlin {
                 implementation(libs.androidx.datastore.preferences)
 
                 // Firebase (using BOM)
-                implementation(platform(libs.firebase.bom))
                 implementation(libs.firebase.messaging)
 
                 // Coroutines for Android
