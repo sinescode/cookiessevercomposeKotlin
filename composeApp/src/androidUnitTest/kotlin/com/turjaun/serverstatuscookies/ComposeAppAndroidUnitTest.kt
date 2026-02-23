@@ -1,4 +1,4 @@
-package com.turjaun.instacookieserver
+package com.turjaun.serverstatuscookies
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

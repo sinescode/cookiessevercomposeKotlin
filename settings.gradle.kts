@@ -1,4 +1,4 @@
-rootProject.name = "CookiesServerInsta"
+rootProject.name = "InstaServerStatus"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
