@@ -22,6 +22,12 @@ jobs:
         distribution: 'temurin'
         cache: gradle
     
+    - name: Decode google-services.json
+      env:
+        GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: |
+        echo "$GOOGLE_SERVICES_JSON" | base64 -di > composeApp/src/androidMain/google-services.json
+    
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
@@ -35,7 +41,6 @@ jobs:
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
-        echo "Building signed release APK..."
         echo "$KEYSTORE_BASE64" | base64 -di > release.keystore
         ./gradlew :composeApp:assembleRelease \
           -Pandroid.injected.signing.store.file=$(pwd)/release.keystore \
@@ -55,3 +60,7 @@ jobs:
       with:
         name: release-apk-signed
         path: composeApp/build/outputs/apk/release/*.apk
+    
+    - name: Cleanup
+      if: always()
+      run: rm -f composeApp/src/androidMain/google-services.json
