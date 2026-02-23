@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)  // Add this
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
 }
