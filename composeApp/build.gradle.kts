@@ -4,14 +4,13 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.composeCompiler)  // Add this for Kotlin 2.0+
 }
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
         }
     }
     
@@ -34,11 +33,9 @@ kotlin {
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
             
-            // AndroidX Lifecycle for Compose
             implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
             implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
             
-            // Firebase
             implementation("com.google.firebase:firebase-bom:33.0.0")
             implementation(libs.firebase.messaging)
             
@@ -67,10 +64,6 @@ android {
     
     buildFeatures {
         compose = true
-    }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
     }
     
     packaging {

@@ -1,15 +1,15 @@
 [versions]
-agp = "8.5.0"  # Updated to support SDK 35
-android-compileSdk = "35"  # Updated to 35
+agp = "8.5.0"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "35"  # Updated to 35
+android-targetSdk = "35"
 androidx-activity = "1.9.0"
 androidx-appcompat = "1.7.0"
-androidx-core = "1.13.0"  # Downgraded to compatible version
+androidx-core = "1.13.0"
 androidx-lifecycle = "2.8.0"
-composeMultiplatform = "1.6.0"
-kotlin = "1.9.22"
-ksp = "1.9.22-1.0.17"
+composeMultiplatform = "1.6.11"
+kotlin = "2.0.0"  # Upgraded from 1.9.22
+ksp = "2.0.0-1.0.22"  # Must match Kotlin version
 material3 = "1.2.0"
 kmpNotifier = "1.4.0"
 firebaseBom = "33.0.0"
