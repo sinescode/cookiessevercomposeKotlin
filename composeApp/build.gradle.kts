@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -9,9 +7,13 @@ plugins {
 }
 
 kotlin {
+    // Explicitly create android target - REQUIRED
     androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+        // Old way for Kotlin 1.9.22 (not compilerOptions)
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
         }
     }
     
@@ -35,6 +37,7 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
+            // Use platform() with libs notation
             implementation(platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
             implementation(libs.androidx.room.runtime)
@@ -97,5 +100,5 @@ ksp {
 dependencies {
     debugImplementation(libs.compose.uiTooling)
     ksp(libs.androidx.room.compiler)
-    kotlinCompilerPluginClasspath(libs.compose.compiler)
+    // Remove kotlinCompilerPluginClasspath - not needed with composeOptions
 }
