@@ -48,14 +48,13 @@ class MainActivity : ComponentActivity() {
             var fcmToken by remember { mutableStateOf("Loading...") }
             val scope = rememberCoroutineScope()
             
-            // Get FCM token
+            // Get FCM token - fixed API
             LaunchedEffect(Unit) {
-                NotifierManager.getPushNotifier().getToken {
-                    fcmToken = it ?: "Failed to get token"
-                }
+                val token = NotifierManager.getPushNotifier().getToken()
+                fcmToken = token ?: "Failed to get token"
             }
             
-            // Listen for FCM messages and save to local DB
+            // Listen for FCM messages and save to local DB - fixed API
             LaunchedEffect(Unit) {
                 NotifierManager.addListener(object : NotifierManager.Listener {
                     override fun onNewToken(token: String) {
@@ -73,9 +72,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     
-                    override fun onPayloadData(data: Map<String, String>) {
-                        // Handle custom data if needed
-                    }
+                    // Remove onPayloadData - it doesn't exist in this version
                 })
             }
             

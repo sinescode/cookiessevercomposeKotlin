@@ -8,13 +8,8 @@ import android.os.Build
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
 import com.turjaun.serverstatuscookies.data.AppDatabase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 
 class MyApplication : Application() {
-    
-    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     
     val database by lazy { AppDatabase.getDatabase(this) }
     
@@ -44,7 +39,7 @@ class MyApplication : Application() {
                 enableLights(true)
                 enableVibration(true)
                 setShowBadge(true)
-                lockscreenVisibility = NotificationManager.VISIBILITY_PUBLIC
+                // Removed lockscreenVisibility - not available in all API levels
             }
             
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
