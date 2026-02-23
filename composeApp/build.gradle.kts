@@ -24,8 +24,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.kmp.notifier)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
@@ -36,7 +34,11 @@ kotlin {
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
             
-            // Firebase BOM - direct string notation workaround
+            // AndroidX Lifecycle for Compose - use androidx namespace not jetbrains
+            implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+            
+            // Firebase BOM - direct string notation
             implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
             implementation(libs.firebase.messaging)
             
@@ -93,11 +95,13 @@ android {
     }
 }
 
+// Fix KSP for multiplatform - use android target specific
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
-    ksp(libs.androidx.room.compiler)
+    // Use kspAndroid for multiplatform projects
+    kspAndroid(libs.androidx.room.compiler)
 }
