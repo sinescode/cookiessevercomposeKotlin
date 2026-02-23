@@ -44,13 +44,6 @@ kotlin {
         
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-            implementation(libs.kotlin.testJunit)
-        }
-        
-        androidUnitTest.dependencies {
-            implementation(libs.junit)
-            implementation(libs.androidx.testExt.junit)
-            implementation(libs.androidx.espresso.core)
         }
     }
 }
@@ -65,7 +58,6 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     
     buildFeatures {
