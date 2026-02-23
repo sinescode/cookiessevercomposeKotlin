@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.composeCompiler)  // Add this for Kotlin 2.0+
 }
 
 kotlin {
