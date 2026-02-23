@@ -7,7 +7,6 @@ plugins {
 }
 
 kotlin {
-    // Explicit androidTarget declaration - must be exactly like this
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -36,10 +35,10 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             
             // AndroidX Lifecycle for Compose
-            implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
-            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+            implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
             
-            // Firebase - without platform() to avoid deprecation
+            // Firebase
             implementation("com.google.firebase:firebase-bom:33.0.0")
             implementation(libs.firebase.messaging)
             
@@ -96,13 +95,11 @@ android {
     }
 }
 
-// KSP configuration for Room
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
-    // Use regular ksp, not kspAndroid
     ksp(libs.androidx.room.compiler)
 }
