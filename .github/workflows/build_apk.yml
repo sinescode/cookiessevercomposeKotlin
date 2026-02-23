@@ -28,8 +28,21 @@ jobs:
     - name: Build Debug APK
       run: ./gradlew :composeApp:assembleDebug
     
-    - name: Build Release APK (unsigned)
-      run: ./gradlew :composeApp:assembleRelease
+    - name: Build Signed Release APK
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      run: |
+        echo "Building signed release APK..."
+        echo "$KEYSTORE_BASE64" | base64 -di > release.keystore
+        ./gradlew :composeApp:assembleRelease \
+          -Pandroid.injected.signing.store.file=$(pwd)/release.keystore \
+          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+        rm -f release.keystore
     
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
@@ -40,5 +53,5 @@ jobs:
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
-        name: release-apk
+        name: release-apk-signed
         path: composeApp/build/outputs/apk/release/*.apk
