@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
 }
@@ -27,14 +26,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            
-            // KMPNotifier for FCM
             implementation(libs.kmp.notifier)
-            
-            // DateTime
             implementation(libs.kotlinx.datetime)
-            
-            // Coroutines
             implementation(libs.kotlinx.coroutines.core)
         }
         
@@ -42,16 +35,10 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
-            
-            // Firebase
             implementation(platform(libs.firebase.bom))
             implementation(libs.firebase.messaging)
-            
-            // Room
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.ktx)
-            
-            // Coroutines Android
             implementation(libs.kotlinx.coroutines.android)
         }
         
@@ -78,12 +65,15 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
-        
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     
     buildFeatures {
         compose = true
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     
     packaging {
@@ -108,13 +98,12 @@ android {
     }
 }
 
-// Room schema export directory
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
-    // Room compiler for KSP
     ksp(libs.androidx.room.compiler)
+    kotlinCompilerPluginClasspath(libs.compose.compiler)
 }

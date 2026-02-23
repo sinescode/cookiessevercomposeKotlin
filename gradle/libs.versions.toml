@@ -1,19 +1,19 @@
 [versions]
-agp = "8.2.2"  # Downgraded: 8.11.2 doesn't exist (latest stable is 8.2.2)
-android-compileSdk = "34"  # Downgraded: 36 doesn't exist yet (latest is 34)
+agp = "8.2.2"
+android-compileSdk = "34"
 android-minSdk = "24"
-android-targetSdk = "34"  # Downgraded to match compileSdk
+android-targetSdk = "34"
 androidx-activity = "1.8.2"
 androidx-appcompat = "1.6.1"
 androidx-core = "1.12.0"
 androidx-espresso = "3.5.1"
 androidx-lifecycle = "2.7.0"
 androidx-testExt = "1.1.5"
-composeMultiplatform = "1.6.0"  # Stable version compatible with Kotlin 1.9.22
+composeMultiplatform = "1.6.0"
 junit = "4.13.2"
-kotlin = "1.9.22"  # Stable version (2.3.0 doesn't exist yet)
-ksp = "1.9.22-1.0.17"  # Must match Kotlin version exactly
-material3 = "1.2.0"  # Stable version
+kotlin = "1.9.22"
+ksp = "1.9.22-1.0.17"
+material3 = "1.2.0"
 kmpNotifier = "1.4.0"
 firebaseBom = "33.0.0"
 room = "2.6.1"
@@ -39,29 +39,22 @@ compose-materialIconsExtended = { module = "org.jetbrains.compose.material:mater
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+compose-compiler = { module = "org.jetbrains.compose.compiler:compiler", version = "1.5.8" }
 
-# FCM & Notifications
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifier" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
-
-# Room for local storage
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-
-# Coroutines
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-
-# DateTime
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "dateTime" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
