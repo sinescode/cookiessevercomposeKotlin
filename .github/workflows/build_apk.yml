@@ -26,13 +26,23 @@ jobs:
       env:
         GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
       run: |
+        if [ -z "$GOOGLE_SERVICES_JSON" ]; then
+          echo "Error: GOOGLE_SERVICES_JSON secret is not set!"
+          echo "Please add the base64-encoded google-services.json to your repository secrets."
+          exit 1
+        fi
         echo "$GOOGLE_SERVICES_JSON" | base64 -di > composeApp/src/androidMain/google-services.json
+        if [ ! -f composeApp/src/androidMain/google-services.json ]; then
+          echo "Error: Failed to create google-services.json"
+          exit 1
+        fi
+        echo "google-services.json created successfully"
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
     - name: Build Debug APK
-      run: ./gradlew :composeApp:assembleDebug
+      run: ./gradlew :composeApp:assembleDebug --no-daemon
     
     - name: Build Signed Release APK
       env:
@@ -41,26 +51,41 @@ jobs:
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
-        echo "$KEYSTORE_BASE64" | base64 -di > release.keystore
-        ./gradlew :composeApp:assembleRelease \
-          -Pandroid.injected.signing.store.file=$(pwd)/release.keystore \
-          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
-          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
-        rm -f release.keystore
+        if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+          echo "Warning: Signing secrets not fully configured. Building unsigned release APK."
+          ./gradlew :composeApp:assembleRelease --no-daemon
+        else
+          echo "$KEYSTORE_BASE64" | base64 -di > release.keystore
+          if [ ! -f release.keystore ]; then
+            echo "Error: Failed to create keystore"
+            exit 1
+          fi
+          ./gradlew :composeApp:assembleRelease \
+            -Pandroid.injected.signing.store.file=$(pwd)/release.keystore \
+            -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
+            --no-daemon
+          rm -f release.keystore
+        fi
     
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: debug-apk
         path: composeApp/build/outputs/apk/debug/*.apk
+        retention-days: 30
     
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: release-apk-signed
         path: composeApp/build/outputs/apk/release/*.apk
+        retention-days: 90
     
-    - name: Cleanup
+    - name: Cleanup secrets
       if: always()
-      run: rm -f composeApp/src/androidMain/google-services.json
+      run: |
+        rm -f composeApp/src/androidMain/google-services.json
+        rm -f release.keystore
+        echo "Cleanup completed"
