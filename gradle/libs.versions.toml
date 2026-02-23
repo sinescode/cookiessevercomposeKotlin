@@ -12,7 +12,6 @@ kotlin = "1.9.22"
 ksp = "1.9.22-1.0.17"
 material3 = "1.2.0"
 kmpNotifier = "1.4.0"
-firebaseBom = "33.0.0"
 room = "2.6.1"
 coroutines = "1.8.0"
 dateTime = "0.6.0"
@@ -34,7 +33,6 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 
 kmp-notifier = { module = "io.github.mirzemehdi:kmpnotifier", version.ref = "kmpNotifier" }
-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging-ktx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

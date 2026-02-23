@@ -7,9 +7,7 @@ plugins {
 }
 
 kotlin {
-    // Explicitly create android target - REQUIRED
     androidTarget {
-        // Old way for Kotlin 1.9.22 (not compilerOptions)
         compilations.all {
             kotlinOptions {
                 jvmTarget = "17"
@@ -37,9 +35,11 @@ kotlin {
             implementation(libs.androidx.core.ktx)
             implementation(libs.androidx.appcompat)
             implementation(libs.androidx.activity.compose)
-            // Use platform() with libs notation
-            implementation(platform(libs.firebase.bom))
+            
+            // Firebase BOM - direct string notation workaround
+            implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
             implementation(libs.firebase.messaging)
+            
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.room.ktx)
             implementation(libs.kotlinx.coroutines.android)
@@ -100,5 +100,4 @@ ksp {
 dependencies {
     debugImplementation(libs.compose.uiTooling)
     ksp(libs.androidx.room.compiler)
-    // Remove kotlinCompilerPluginClasspath - not needed with composeOptions
 }
