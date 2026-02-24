@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import com.mmk.kmpnotifier.notification.NotifierListener
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
 import com.turjaun.serverstatuscookies.data.AppDatabase
@@ -31,24 +30,23 @@ class MyApplication : Application() {
             )
         )
 
-        // 🔥 Correct listener setup
-        NotifierManager.addListener(object : NotifierListener {
+        // ✅ Correct listener implementation
+        NotifierManager.addListener(object : NotifierManager.Listener {
             override fun onNewToken(token: String) {
-                // Handle new FCM token (e.g., save to database)
                 Log.d("FCM", "New token: $token")
-                // If you have a DeviceToken table, save it here
+                // TODO: Save token to DeviceToken table if needed
             }
 
-            override fun onPushNotification(data: Map<String, String>) {
-                // Save each incoming notification to Room database
+            override fun onNotification(title: String?, body: String?, data: Map<String, String>) {
+                // Save incoming notification to Room database
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = database.notificationDao()
                         val repository = NotificationRepository(dao)
 
                         repository.addNotification(
-                            title = data["title"] ?: "No title",
-                            body = data["body"] ?: "No body",
+                            title = title ?: data["title"] ?: "No title",
+                            body = body ?: data["body"] ?: "No body",
                             data = data.toString(),
                             priority = data["priority"] ?: "high"
                         )
