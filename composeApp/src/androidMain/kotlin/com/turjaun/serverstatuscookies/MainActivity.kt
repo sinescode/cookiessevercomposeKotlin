@@ -17,13 +17,17 @@ import com.turjaun.serverstatuscookies.viewmodel.NotificationViewModel
 
 class MainActivity : ComponentActivity() {
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            Log.d("MainActivity", "Notification permission granted")
+            Log.d(TAG, "Notification permission granted")
         } else {
-            Log.d("MainActivity", "Notification permission denied")
+            Log.d(TAG, "Notification permission denied")
         }
     }
 
@@ -33,8 +37,8 @@ class MainActivity : ComponentActivity() {
         // Request notification permission for Android 13+
         requestNotificationPermission()
 
-        // Check for existing notification permission
-        checkNotificationPermission()
+        // Handle notification data from intent (when app was started from notification)
+        handleNotificationIntent()
 
         setContent {
             val viewModel: NotificationViewModel = viewModel()
@@ -46,20 +50,15 @@ class MainActivity : ComponentActivity() {
                 try {
                     val token = NotifierManager.getPushNotifier().getToken()
                     fcmToken = token
-                    Log.d("MainActivity", "FCM Token: ${token?.take(20)}...")
+                    Log.d(TAG, "FCM Token: ${token?.take(20)}...")
                     if (token == null) {
-                        Log.w("MainActivity", "Failed to get FCM token")
+                        Log.w(TAG, "Failed to get FCM token")
                     }
                 } catch (e: Exception) {
-                    Log.e("MainActivity", "Error getting FCM token", e)
+                    Log.e(TAG, "Error getting FCM token", e)
                 } finally {
                     isTokenLoading = false
                 }
-            }
-
-            // Handle notification clicks from intent
-            LaunchedEffect(intent) {
-                handleNotificationIntent()
             }
 
             NotificationScreen(
@@ -76,7 +75,7 @@ class MainActivity : ComponentActivity() {
                     this,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    Log.d("MainActivity", "Notification permission already granted")
+                    Log.d(TAG, "Notification permission already granted")
                 }
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
                     // Show rationale if needed, then request
@@ -89,29 +88,33 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun checkNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            val permission = ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-            if (permission == PackageManager.PERMISSION_GRANTED) {
-                Log.d("MainActivity", "Notifications are enabled")
-            } else {
-                Log.d("MainActivity", "Notifications are not enabled")
-            }
-        }
-    }
-
     private fun handleNotificationIntent() {
         // Handle notification tap if app was started from notification
         intent?.let { intent ->
             val extras = intent.extras
-            if (extras != null) {
+            if (extras != null && extras.size() > 0) {
+                Log.d(TAG, "=== Notification Intent Received ===")
                 for (key in extras.keySet()) {
-                    Log.d("MainActivity", "Notification extra: $key = ${extras.get(key)}")
+                    Log.d(TAG, "Notification extra: $key = ${extras.get(key)}")
+                }
+
+                // Extract notification data from intent
+                val title = extras.getString("title") ?: extras.getString("gcm.notification.title")
+                val body = extras.getString("body") ?: extras.getString("gcm.notification.body")
+
+                if (title != null || body != null) {
+                    Log.d(TAG, "Saving notification from intent: $title - $body")
+                    // The notification should already be saved by FirebaseMessagingService
+                    // But we can verify it here if needed
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        // Handle new intent when app is already running
+        this.intent = intent
+        handleNotificationIntent()
     }
 }
