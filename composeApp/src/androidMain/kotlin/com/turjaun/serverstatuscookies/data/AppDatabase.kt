@@ -6,17 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [NotificationEntity::class],
-    version = 1,
+    entities = [NotificationEntity::class, DeviceToken::class],   // added DeviceToken
+    version = 2,                                                   // version increased
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
-    
+    abstract fun deviceTokenDao(): DeviceTokenDao                 // new DAO
+
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
-        
+
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -24,7 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "notification_database"
                 )
-                .fallbackToDestructiveMigration()
+                .fallbackToDestructiveMigration()                  // will recreate DB
                 .build()
                 INSTANCE = instance
                 instance

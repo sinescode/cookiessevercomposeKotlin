@@ -1,5 +1,9 @@
 package com.turjaun.serverstatuscookies.ui.screens
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,7 +38,8 @@ fun NotificationScreen(
     val unreadCount by viewModel.unreadCount.collectAsState()
     var showClearDialog by remember { mutableStateOf(false) }
     var showTokenDialog by remember { mutableStateOf(false) }
-    
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,7 +71,7 @@ fun NotificationScreen(
                             tint = Secondary
                         )
                     }
-                    
+
                     // Mark all read
                     if (unreadCount > 0) {
                         IconButton(onClick = { viewModel.markAllAsRead() }) {
@@ -76,7 +82,7 @@ fun NotificationScreen(
                             )
                         }
                     }
-                    
+
                     // Clear all
                     if (notifications.isNotEmpty()) {
                         IconButton(onClick = { showClearDialog = true }) {
@@ -131,20 +137,20 @@ fun NotificationScreen(
                 }
             }
         }
-        
+
         // Clear All Dialog
         if (showClearDialog) {
             AlertDialog(
                 onDismissRequest = { showClearDialog = false },
                 containerColor = SurfaceDark,
-                title = { 
+                title = {
                     Text(
                         "Clear All Notifications?",
                         color = OnSurface,
                         fontWeight = FontWeight.Bold
                     )
                 },
-                text = { 
+                text = {
                     Text(
                         "This will permanently delete all ${notifications.size} notifications.",
                         color = OnSurfaceVariant
@@ -168,20 +174,20 @@ fun NotificationScreen(
                 }
             )
         }
-        
-        // Token Dialog
+
+        // Token Dialog with Copy functionality
         if (showTokenDialog) {
             AlertDialog(
                 onDismissRequest = { showTokenDialog = false },
                 containerColor = SurfaceDark,
-                title = { 
+                title = {
                     Text(
                         "FCM Device Token",
                         color = OnSurface,
                         fontWeight = FontWeight.Bold
                     )
                 },
-                text = { 
+                text = {
                     Column {
                         Text(
                             "Copy this token to send notifications to this device:",
@@ -201,11 +207,33 @@ fun NotificationScreen(
                     }
                 },
                 confirmButton = {
-                    Button(
-                        onClick = { showTokenDialog = false },
-                        colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text("Close")
+                        // Copy button
+                        Button(
+                            onClick = {
+                                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val clip = ClipData.newPlainText("FCM Token", fcmToken)
+                                clipboard.setPrimaryClip(clip)
+                                Toast.makeText(context, "Token copied!", Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Secondary)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Copy")
+                        }
+                        // Close button
+                        TextButton(
+                            onClick = { showTokenDialog = false }
+                        ) {
+                            Text("Close", color = Secondary)
+                        }
                     }
                 }
             )
