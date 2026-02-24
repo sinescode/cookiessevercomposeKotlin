@@ -5,7 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import androidx.lifecycle.lifecycleScope // optional, but we'll use CoroutineScope directly
+import android.util.Log
+import com.mmk.kmpnotifier.notification.NotifierListener
 import com.mmk.kmpnotifier.notification.NotifierManager
 import com.mmk.kmpnotifier.notification.configuration.NotificationPlatformConfiguration
 import com.turjaun.serverstatuscookies.data.AppDatabase
@@ -30,10 +31,16 @@ class MyApplication : Application() {
             )
         )
 
-        // 🔥 Add this listener to save notifications to Room
-        NotifierManager.addListener(
-            onPushNotification = { data: Map<String, String> ->
-                // Run database insertion on a background thread
+        // 🔥 Correct listener setup
+        NotifierManager.addListener(object : NotifierListener {
+            override fun onNewToken(token: String) {
+                // Handle new FCM token (e.g., save to database)
+                Log.d("FCM", "New token: $token")
+                // If you have a DeviceToken table, save it here
+            }
+
+            override fun onPushNotification(data: Map<String, String>) {
+                // Save each incoming notification to Room database
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = database.notificationDao()
@@ -42,22 +49,17 @@ class MyApplication : Application() {
                         repository.addNotification(
                             title = data["title"] ?: "No title",
                             body = data["body"] ?: "No body",
-                            data = data.toString(),        // store the whole map as JSON string
+                            data = data.toString(),
                             priority = data["priority"] ?: "high"
                         )
 
-                        // Optional: Log success
-                        android.util.Log.d("FCM", "Notification saved to database")
+                        Log.d("FCM", "Notification saved to database")
                     } catch (e: Exception) {
-                        android.util.Log.e("FCM", "Failed to save notification", e)
+                        Log.e("FCM", "Failed to save notification", e)
                     }
                 }
-            },
-            onNewToken = { token ->
-                // You can save the token here if needed (e.g., to DeviceToken table)
-                android.util.Log.d("FCM", "New token: $token")
             }
-        )
+        })
     }
 
     private fun createNotificationChannel() {
