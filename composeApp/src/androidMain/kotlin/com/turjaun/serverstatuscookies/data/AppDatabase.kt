@@ -6,13 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [NotificationEntity::class, DeviceToken::class],   // added DeviceToken
-    version = 2,                                                   // version increased
+    entities = [NotificationEntity::class, DeviceToken::class],
+    version = 3,  // Increased version for new table
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
-    abstract fun deviceTokenDao(): DeviceTokenDao                 // new DAO
+    abstract fun deviceTokenDao(): DeviceTokenDao
 
     companion object {
         @Volatile
@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "notification_database"
                 )
-                .fallbackToDestructiveMigration()                  // will recreate DB
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance
