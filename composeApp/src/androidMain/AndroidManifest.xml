@@ -13,7 +13,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/Theme.ServerStatusCookies"
         tools:targetApi="34">
 
@@ -24,12 +23,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <!-- Notification click intent filter -->
-            <intent-filter>
-                <action android:name="android.intent.action.PROCESS_TEXT"/>
-                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 
@@ -43,7 +36,7 @@
             </intent-filter>
         </service>
 
-        <!-- Default notification channel for Android 8.0+ -->
+        <!-- Default notification channel -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_priority_channel" />
