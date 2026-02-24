@@ -37,18 +37,31 @@ class MyApplication : Application() {
                 Log.d("FCM", "New token: $token")
             }
 
+            // Called when a standard notification is received (usually in foreground)
             override fun onPushNotification(title: String?, body: String?) {
-                Log.d("FCM", "Notification received in Application: $title")
-                
-                // Save to database in a background thread
+                Log.d("FCM", "Notification received: $title")
+                saveToDatabase(title ?: "No title", body ?: "No body")
+            }
+
+            // Called when a DATA message is received (works in the background!)
+            override fun onPayloadData(data: Map<String, String>) {
+                Log.d("FCM", "Data payload received: $data")
+                // Extract the title and body we sent from Python
+                val title = data["title"] ?: "No title"
+                val body = data["body"] ?: "No body"
+                saveToDatabase(title, body)
+            }
+
+            // Helper function to handle the database insertion
+            private fun saveToDatabase(title: String, body: String) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = database.notificationDao()
                         val repository = NotificationRepository(dao)
 
                         repository.addNotification(
-                            title = title ?: "No title",
-                            body = body ?: "No body",
+                            title = title,
+                            body = body,
                             priority = "high"
                         )
 
@@ -59,7 +72,8 @@ class MyApplication : Application() {
                 }
             }
         })
-    }
+      }
+
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
