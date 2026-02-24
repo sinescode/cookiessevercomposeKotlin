@@ -30,25 +30,24 @@ class MyApplication : Application() {
             )
         )
 
-        // ✅ Correct listener implementation
+        // ✅ Correct listener – matches your KMPNotifier API
         NotifierManager.addListener(object : NotifierManager.Listener {
             override fun onNewToken(token: String) {
                 Log.d("FCM", "New token: $token")
-                // TODO: Save token to DeviceToken table if needed
+                // (Optional) save token to DeviceToken table
             }
 
-            override fun onNotification(title: String?, body: String?, data: Map<String, String>) {
-                // Save incoming notification to Room database
+            override fun onPushNotification(title: String?, body: String?) {
+                // Save each incoming notification to Room database
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = database.notificationDao()
                         val repository = NotificationRepository(dao)
 
                         repository.addNotification(
-                            title = title ?: data["title"] ?: "No title",
-                            body = body ?: data["body"] ?: "No body",
-                            data = data.toString(),
-                            priority = data["priority"] ?: "high"
+                            title = title ?: "No title",
+                            body = body ?: "No body",
+                            priority = "high"   // default; adjust if you send priority in payload
                         )
 
                         Log.d("FCM", "Notification saved to database")
