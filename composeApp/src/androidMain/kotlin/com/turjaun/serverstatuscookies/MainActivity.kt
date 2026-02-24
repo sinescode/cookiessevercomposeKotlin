@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mmk.kmpnotifier.notification.NotifierManager
-import com.mmk.kmpnotifier.permission.PermissionUtil
 import com.turjaun.serverstatuscookies.ui.screens.NotificationScreen
 import com.turjaun.serverstatuscookies.viewmodel.NotificationViewModel
 import kotlinx.coroutines.launch
@@ -46,35 +45,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: NotificationViewModel = viewModel()
             var fcmToken by remember { mutableStateOf("Loading...") }
-            val scope = rememberCoroutineScope()
             
-            // Get FCM token - fixed API
+            // Get FCM token
             LaunchedEffect(Unit) {
                 val token = NotifierManager.getPushNotifier().getToken()
                 fcmToken = token ?: "Failed to get token"
             }
             
-            // Listen for FCM messages and save to local DB - fixed API
-            LaunchedEffect(Unit) {
-                NotifierManager.addListener(object : NotifierManager.Listener {
-                    override fun onNewToken(token: String) {
-                        fcmToken = token
-                    }
-                    
-                    override fun onPushNotification(title: String?, body: String?) {
-                        // Save to local database
-                        scope.launch {
-                            viewModel.addNotification(
-                                title = title ?: "New Notification",
-                                body = body ?: "",
-                                priority = "high"
-                            )
-                        }
-                    }
-                    
-                    // Remove onPayloadData - it doesn't exist in this version
-                })
-            }
+            // REMOVED: The listener logic from here. 
+            // MyApplication handles saving in the background globally.
             
             NotificationScreen(
                 viewModel = viewModel,

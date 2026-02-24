@@ -26,19 +26,21 @@ class MyApplication : Application() {
         NotifierManager.initialize(
             configuration = NotificationPlatformConfiguration.Android(
                 notificationIconResId = R.drawable.ic_launcher_foreground,
-                showPushNotification = true,
+                // This ensures the library shows the system notification automatically
+                showPushNotification = true, 
             )
         )
 
-        // ✅ Correct listener – matches your KMPNotifier API
+        // Global Listener: Works even if the app is in the background/killed
         NotifierManager.addListener(object : NotifierManager.Listener {
             override fun onNewToken(token: String) {
                 Log.d("FCM", "New token: $token")
-                // (Optional) save token to DeviceToken table
             }
 
             override fun onPushNotification(title: String?, body: String?) {
-                // Save each incoming notification to Room database
+                Log.d("FCM", "Notification received in Application: $title")
+                
+                // Save to database in a background thread
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val dao = database.notificationDao()
@@ -47,10 +49,10 @@ class MyApplication : Application() {
                         repository.addNotification(
                             title = title ?: "No title",
                             body = body ?: "No body",
-                            priority = "high"   // default; adjust if you send priority in payload
+                            priority = "high"
                         )
 
-                        Log.d("FCM", "Notification saved to database")
+                        Log.d("FCM", "Saved to database successfully")
                     } catch (e: Exception) {
                         Log.e("FCM", "Failed to save notification", e)
                     }
